@@ -12,7 +12,6 @@ from __future__ import unicode_literals
 import struct
 import time
 import os
-from builtins import bytes
 from datetime import datetime
 
 # protocol constants
@@ -573,7 +572,6 @@ class UBloxMessage:
             raise UBloxError('Unknown message %s' % str(type))
         msg_types[type].pack(self)
 
-    @property
     def name(self):
         '''return the short string name for a message'''
         if not self.valid():
@@ -721,7 +719,7 @@ class UBlox:
 
         if self.logfile:
             mode = 'ab' if append else 'wb'
-        self.log = open(self.logfile, mode=mode)
+            self.log = open(self.logfile, mode=mode)
 
     def set_preferred_dynamic_model(self, model):
         '''set the preferred dynamic model for receiver'''
