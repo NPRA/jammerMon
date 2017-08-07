@@ -1,6 +1,8 @@
-import ublox
+
 import logging
 from unittest.mock import patch, Mock
+
+from . import ublox
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +41,8 @@ class EVK8N:
         self._device.configure_message_rate(ublox.CLASS_RXM, ublox.MSG_RXM_SVSI, 1)
         self._device.configure_message_rate(ublox.CLASS_RXM, ublox.MSG_RXM_ALM, 1)
         self._device.configure_message_rate(ublox.CLASS_RXM, ublox.MSG_RXM_EPH, 1)
-        self._device.configure_message_rate(ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS, 5)
+        self._device.configure_message_rate(ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS, 1)
+        self._device.configure_message_rate(ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC, 1)
         self._device.configure_message_rate(ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK, 5)
         # self._device.configure_message_rate(ublox.CLASS_NAV, ublox.MSG_NAV_DGPS, 5)
 
