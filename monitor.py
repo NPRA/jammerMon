@@ -6,6 +6,11 @@ log = logging.getLogger(__name__)
 
 
 class JammerMon:
+    """
+    Class to handle a stream of messages from our uBlox device and 
+    store events from the stream in a timeseries output file on disk.
+    """
+
     def __init__(self, device, output):
         self._device = device
         self._output = output
