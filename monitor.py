@@ -27,6 +27,6 @@ class JammerMon:
 
             if not msg.unpacked:
                 msg.unpack()
-            log.info("Name = {}, Fields = {}".format(msg.name, msg.fields))
+            log.info("Name = {}, Fields = {}".format(msg.name(), msg.fields))
 
             time.sleep(1)
