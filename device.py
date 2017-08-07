@@ -94,19 +94,22 @@ class FakeEVK8N:
     @staticmethod
     def gen_test_messages():
         import itertools
+        import time
 
         m1 = Mock()
         m1.msg_type.return_value = (ublox.CLASS_MON, ublox.MSG_MON_HW)
         m1.valid.return_value = True
         m1.unpacked.return_value = True
-        m1.name = "MON-HW"
+        m1.name.return_value = "MON-HW"
         m1.fields = {'pinSel': 128000, 'pinBank': 0, 'pinDir': 65536, 'pinVal': 129007, 'noisePerMS': 102, 'agcCnt': 468, 'aStatus': 2, 'aPower': 1, 'flags': 1, 'reserved1': 132, 'usedMask': 125951, 'VP': [10, 11, 12, 13, 14, 15, 1, 0, 2, 3, 255, 16, 255, 18, 19, 54, 53], 'jamInd': 6, 'reserved3': [239, 92], 'pinInq': 0, 'pullH': 128896, 'pullL': 0}
 
         messages = [
             m1
         ]
 
-        return itertools.cycle(messages)
+        for m in itertools.cycle(messages):
+            time.sleep(1)
+            yield m
 
     def stream(self):
         return FakeEVK8N.gen_test_messages()

@@ -14,8 +14,20 @@ class JammerMon:
         with open(self._output, 'a'):
             os.utime(self._output, None)
 
+        self._file = None
+
+    def write(self, packet):
+        # id;utc;lat;lon;jam_ind
+        fmt = "{id};{utc};{lat};{lon};{jam_ind}\n"
+
+        self._file.write(fmt.format(*packet))
+
+    def close(self):
+        if self._file:
+            self._file.close()
+
     def run(self):
-        import time
+        self._file = open(self._output, 'a+')
 
         for msg in self._device.stream():
             # Filter out messages we don't care about
@@ -27,6 +39,5 @@ class JammerMon:
 
             if not msg.unpacked:
                 msg.unpack()
-            log.info("Name = {}, Fields = {}".format(msg.name(), msg.fields))
 
-            time.sleep(1)
+            log.info("Name = {}, Fields = {}".format(msg.name(), msg.fields))
