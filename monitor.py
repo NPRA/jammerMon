@@ -17,7 +17,8 @@ class JammerMon:
 
     def __init__(self, device, output):
         self._device = device
-        self._output = output
+        self._today = datetime.datetime.now().date()
+        self._output = "_".join([output, str(self._today)])
 
         output_dir = os.path.dirname(output)
         if output_dir and not os.path.exists(output_dir):
@@ -32,7 +33,7 @@ class JammerMon:
         self._next_id = previous_id + 1
 
         self._file = open(self._output, 'a+')
-        self._today = datetime.datetime.now().date()
+        
         self._gps_fixes = deque([], 5)
 
     def next_logical_id(self):
@@ -99,7 +100,7 @@ class JammerMon:
                 msg.unpack()
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_POSLLH):
-                log.info("MSG-NAV-POSLLH: {}".format(msg.fields))
+                log.debug("MSG-NAV-POSLLH: {}".format(msg.fields))
                 latitude = msg.fields.get('Latitude', -1) * 1e-7
                 longitude = msg.fields.get('Longitude', -1) * 1e-7
                 # hMSL: height above Mean Sea Level (in mm)
@@ -109,21 +110,21 @@ class JammerMon:
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS):
-                log.info("MSG-NAV-TIMEGPS: {}".format(msg.fields))
+                log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC):
-                log.info("MSG-NAV-TIMEUTC: {}".format(msg.fields))
+                log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK):
-                log.info("MSG-NAV-TIMEUTC: {}".format(msg.fields))
+                log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() != (ublox.CLASS_MON, ublox.MSG_MON_HW):
                 continue
 
-            log.info("Name = {}, Fields = {}".format(msg.name(), msg.fields))
+            log.debug("Name = {}, Fields = {}".format(msg.name(), msg.fields))
 
             packet = msg.fields
             packet['utc'] = datetime.datetime.utcnow()

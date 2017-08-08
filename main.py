@@ -21,7 +21,8 @@ log = logging.getLogger(__name__)
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--port", help="serial port", required=True)
 parser.add_argument("-b", "--baudrate", type=int, help="serial baud rate", default=115200)
-parser.add_argument("-o", "--output", help="output file for timeseries data", default="data/output.dat")
+parser.add_argument("-o", "--output", help="""output file for timeseries data. 
+NOTE: A datetime will be added to each file to track records over multiple days.""", default="data/output")
 
 
 if __name__ == '__main__':
