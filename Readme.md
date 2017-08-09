@@ -12,7 +12,7 @@ The code is tested with Python3. Not 100% sure about Python2, but maybe.. :)
 
 For development / testing without having the uBlox device connected:
 ```
-python -m jam_mon.fake_main
+python fake_main.py
 ```
 
 If you have the uBlox device connected then first figure out the path to the device.
@@ -25,7 +25,10 @@ source venv/bin/activate
 pip install pyserial
 
 # then start the monitor
-python -m jam_mon.main
+python main.py
+
+# help menu
+python main.py --help
 ```
 
 ## Development
