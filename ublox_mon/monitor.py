@@ -24,10 +24,11 @@ class JammerMon:
         if output_dir and not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
-        # Creates the if missing + update mtime
-        with open(self._output, 'a') as f:
-            os.utime(self._output, None)
-            f.write("#id;utc;jamInd;lat;lon\n")
+        # Creates file if missing + update mtime + write header
+        if not os.path.exists(self._output):
+            with open(self._output, 'a') as f:
+                os.utime(self._output, None)
+                f.write("#id;utc;jamInd;lat;lon\n")
 
         # Find / create next ID
         previous_id = self.next_logical_id()
@@ -40,6 +41,10 @@ class JammerMon:
     def next_logical_id(self):
         last_line = util.last_line(self._output)
         if not last_line:
+            return 0
+
+        # Ignore if the last line is a comment!
+        if last_line.startswith(b"#"):
             return 0
 
         try:
