@@ -129,7 +129,7 @@ class JammerMon:
             log.debug("Name = {}, Fields = {}".format(msg.name(), msg.fields))
 
             packet = msg.fields
-            packet['utc'] = datetime.datetime.utcnow()
+            packet['utc'] = datetime.datetime.utcnow().replace(microsecond=0)
             packet['timestamp_id'] = self._next_id
             if 'jamInd' not in msg.fields:
                 packet['jamInd'] = -1
