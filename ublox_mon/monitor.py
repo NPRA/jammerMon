@@ -25,8 +25,9 @@ class JammerMon:
             os.mkdir(output_dir)
 
         # Creates the if missing + update mtime
-        with open(self._output, 'a'):
+        with open(self._output, 'a') as f:
             os.utime(self._output, None)
+            f.write("#id;utc;jamInd;lat;lon\n")
 
         # Find / create next ID
         previous_id = self.next_logical_id()
@@ -60,6 +61,7 @@ class JammerMon:
         packet.update(last_gps_fix)
 
         fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
+
         self._file.write(fmt.format(**packet))
         self._file.flush()
 
