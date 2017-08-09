@@ -56,7 +56,7 @@ class FakeEVK8N:
     def __init__(self, device_port, baudrate=115200, timeout=2):
         self._setup_device(device_port, baudrate, timeout)
 
-    @patch('ublox.UBlox')
+    @patch('ublox_mon.ublox.UBlox')
     def _setup_device(self, device_port, baudrate, timeout, UBloxMock):
         # self._device = ublox.UBlox(device_port, baudrate, timeout=2)
         self._device = UBloxMock(device_port, baudrate, timeout=2)
