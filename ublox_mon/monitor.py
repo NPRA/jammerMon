@@ -6,7 +6,7 @@ from collections import deque
 from . import ublox
 from . import util
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("jamMon")
 
 
 class JammerMon:
