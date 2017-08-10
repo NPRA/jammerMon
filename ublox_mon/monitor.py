@@ -30,6 +30,8 @@ class JammerMon:
                 os.utime(self._output, None)
                 f.write("#id;utc;jamInd;lat;lon\n")
 
+        log.info("JammerMon outputting to {}".format(self._output))
+
         # Find / create next ID
         previous_id = self.next_logical_id()
         self._next_id = previous_id + 1
@@ -49,13 +51,11 @@ class JammerMon:
 
         try:
             previous_id = int(last_line.split(b";")[0])
-            return previous_id
+            return previous_id + 1
         except ValueError as verr:
             log.error("Output file seems to be corrupt.. Try to debug!")
             log.error(verr)
-
-            import sys
-            sys.exit(1)
+            return 0
 
     def write(self, packet):
         last_gps_fix = None
@@ -117,15 +117,15 @@ class JammerMon:
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS):
-                log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
+                #log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC):
-                log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
+                #log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK):
-                log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
+                #log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() != (ublox.CLASS_MON, ublox.MSG_MON_HW):
