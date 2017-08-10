@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 
 from . import ublox
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("jamMon")
 
 
 class EVK8N:
