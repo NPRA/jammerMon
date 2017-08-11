@@ -16,9 +16,19 @@ sys.path.append(os.path.realpath(__file__))
 import ublox_mon.device
 from ublox_mon.monitor import JammerMon
 
+logfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "jamMon.log")
+#logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+#logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+log = logging.getLogger("jamMon")
+log.setLevel(logging.DEBUG)
+fh = logging.FileHandler(logfile)
+fh.setLevel(logging.DEBUG)
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-log = logging.getLogger(__name__)
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+
+log.addHandler(fh)
+log.addHandler(ch)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--port", help="serial port", required=True)
@@ -34,9 +44,14 @@ if __name__ == '__main__':
     output_file = args.output
     if not os.path.exists(device_path):
         log.error("uBlox device missing! {}".format(device_path))
+    
+    try:
+        device = ublox_mon.device.EVK8N(args.port)
 
-    device = ublox_mon.device.EVK8N(args.port)
-    jam_mon = JammerMon(device, output_file)
-    log.info("Starting Jammer Monitor!")
-
-    jam_mon.run()
+        log.info("Starting Jammer Monitor!")
+        jam_mon = JammerMon(device, output_file)
+        jam_mon.run()
+    except Exception as e:
+        logging.exception(e)
+    finally:
+        jam_mon.close()
