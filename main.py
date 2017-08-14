@@ -24,7 +24,7 @@ log.setLevel(logging.DEBUG)
 fh = logging.FileHandler(logfile)
 fh.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler()
+ch = logging.StreamHandler(stream=sys.stdout)
 ch.setLevel(logging.ERROR)
 
 log.addHandler(fh)
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     output_file = args.output
     if not os.path.exists(device_path):
         log.error("uBlox device missing! {}".format(device_path))
-    
+
     try:
         device = ublox_mon.device.EVK8N(args.port)
 
@@ -52,6 +52,7 @@ if __name__ == '__main__':
         jam_mon = JammerMon(device, output_file)
         jam_mon.run()
     except Exception as e:
-        logging.exception(e)
+        log.error("Exception occured in monitor!")
+        log.exception(e)
     finally:
         jam_mon.close()
