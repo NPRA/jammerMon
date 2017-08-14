@@ -68,7 +68,7 @@ class JammerMon:
         fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
 
         self._file.write(fmt.format(**packet))
-        self._file.flush()
+        # self._file.flush()
 
     def close(self):
         if self._file:
