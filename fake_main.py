@@ -10,8 +10,17 @@ sys.path.append(os.path.realpath(__file__))
 import ublox_mon.device
 from ublox_mon.monitor import JammerMon
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-log = logging.getLogger(__name__)
+logfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "jamMon_fake.log")
+log = logging.getLogger("jamMon")
+log.setLevel(logging.DEBUG)
+fh = logging.FileHandler(logfile)
+fh.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler(stream=sys.stdout)
+ch.setLevel(logging.ERROR)
+
+log.addHandler(fh)
+log.addHandler(ch)
 
 if __name__ == '__main__':
     log.info("This is only for development when you don't have access to the uBlox device!")
