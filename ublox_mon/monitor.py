@@ -37,7 +37,7 @@ class JammerMon:
         self._next_id = previous_id + 1
 
         self._file = open(self._output, 'a+')
-        
+
         self._gps_fixes = deque([], 5)
 
     def next_logical_id(self):
@@ -84,11 +84,11 @@ class JammerMon:
         filter_messages = [
             (ublox.CLASS_MON, ublox.MSG_MON_HW),
             (ublox.CLASS_NAV, ublox.MSG_NAV_POSLLH),
-            (ublox.CLASS_NAV, ublox.MSG_NAV_POSECEF),
-            (ublox.CLASS_RXM, ublox.MSG_RXM_RAW),
-            (ublox.CLASS_RXM, ublox.MSG_RXM_SFRB),
-            (ublox.CLASS_AID, ublox.MSG_AID_EPH),
-            (ublox.CLASS_NAV, ublox.MSG_NAV_SVINFO),
+            # (ublox.CLASS_NAV, ublox.MSG_NAV_POSECEF),
+            # (ublox.CLASS_RXM, ublox.MSG_RXM_RAW),
+            # (ublox.CLASS_RXM, ublox.MSG_RXM_SFRB),
+            # (ublox.CLASS_AID, ublox.MSG_AID_EPH),
+            # (ublox.CLASS_NAV, ublox.MSG_NAV_SVINFO),
             (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS),
             (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC),
             (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK)
@@ -131,7 +131,7 @@ class JammerMon:
             if msg.msg_type() != (ublox.CLASS_MON, ublox.MSG_MON_HW):
                 continue
 
-            log.debug("Name = {}, Fields = {}".format(msg.name(), msg.fields))
+            # log.debug("Name = {}, Fields = {}".format(msg.name(), msg.fields))
 
             packet = msg.fields
             packet['utc'] = datetime.datetime.utcnow().replace(microsecond=0)
@@ -140,7 +140,7 @@ class JammerMon:
                 packet['jamInd'] = -1
             packet['lat'] = 0
             packet['lon'] = 0
-            log.debug(packet)
+            log.debug("{}: {}".format(self._next_id, packet))
 
             # Write data to timeseries output file
             self.write(packet)
