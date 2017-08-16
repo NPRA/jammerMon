@@ -1,5 +1,10 @@
 import os
 import os.path
+import logging
+import subprocess
+import shlex
+
+log = logging.getLogger("jamMon")
 
 
 def last_line(filename):
@@ -21,3 +26,18 @@ def last_line(filename):
             return last
     except OSError:
         return None
+
+
+def slack_notification(msg, url):
+    cmd = """curl -X POST --data-urlencode \
+        'payload={{"channel": "#tran-notifications", "username": "webhookbot", \
+        "text": "{}", \
+        "icon_emoji": ":ghost:"}}' \
+        {}"""
+    splitted_args = cmd.format(msg, url)
+    args = shlex.split(splitted_args)
+    try:
+        subprocess.run(args, check=True)
+    except subprocess.CalledProcessError as e:
+        log.error("Unable to send Slack notification!")
+        log.exception(e)
