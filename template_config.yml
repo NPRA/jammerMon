@@ -1,0 +1,7 @@
+# This is an template / example config file.
+# To enable Slack notifications then fill in the URL of your 
+# Slack webhook URL.
+baudrate: 115200
+port: /dev/ttyUBlox
+# slack_webhook_url: https://hooks.slack.com/services/XXXXX/YYYYY
+output: data/out
