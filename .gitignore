@@ -4,3 +4,5 @@ venv
 test_output.dat
 output.dat
 *.log
+# private config file
+config.yml
