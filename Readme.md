@@ -10,6 +10,8 @@ sees any attempts of Jamming.
 
 The code is tested with Python3. Not 100% sure about Python2, but maybe.. :)
 
+
+
 For development / testing without having the uBlox device connected:
 ```
 python fake_main.py
@@ -22,7 +24,7 @@ Then first install or make sure you have pyserial
 ```
 python -m venv venv
 source venv/bin/activate
-pip install pyserial
+pip install -r requirements.txt
 
 # then start the monitor
 python main.py
@@ -30,6 +32,10 @@ python main.py
 # help menu
 python main.py --help
 ```
+
+*Note:*
+You want to rename the `template_config.yml` file to something like `config.yml`. Then ofcourse you need to change the settings to reflect your setup. If you don´t want to use a config file you can always use the command line arguments. Check out the "help" menu like this: 
+
 
 ## Development
 
