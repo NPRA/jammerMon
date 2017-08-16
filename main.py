@@ -10,6 +10,7 @@ import os
 import os.path
 import logging
 import argparse
+import serial
 import sys
 sys.path.append(os.path.realpath(__file__))
 
@@ -17,8 +18,6 @@ import ublox_mon.device
 from ublox_mon.monitor import JammerMon
 
 logfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "jamMon.log")
-#logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-#logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger("jamMon")
 log.setLevel(logging.DEBUG)
 fh = logging.FileHandler(logfile)
@@ -51,6 +50,9 @@ if __name__ == '__main__':
         log.info("Starting Jammer Monitor!")
         jam_mon = JammerMon(device, output_file)
         jam_mon.run()
+    except serial.seriaulutil.SerialExceptkion as se:
+        log.warn("SerialException: Most likely lost connection to serial device.")
+        log.exception(se)
     except Exception as e:
         log.error("Exception occured in monitor!")
         log.exception(e)
