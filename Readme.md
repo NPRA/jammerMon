@@ -34,7 +34,19 @@ python main.py --help
 ```
 
 *Note:*
-You want to rename the `template_config.yml` file to something like `config.yml`. Then ofcourse you need to change the settings to reflect your setup. If you don´t want to use a config file you can always use the command line arguments. Check out the "help" menu like this: 
+You want to rename the `template_config.yml` file to something like `config.yml`. Then ofcourse you need to change the settings to reflect your setup. If you don´t want to use a config file you can always use the command line arguments. Check out the "help" menu "--help".
+
+
+## Configuration file
+
+```yaml
+baudrate: 115200
+port: /dev/ttyMyDevice
+slack_webhook_url: https://hooks.slack.com/services/XXXXX/YYYYY
+output: data/out
+```
+
+TODO: explain each setting
 
 
 ## Development
