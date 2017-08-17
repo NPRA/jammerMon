@@ -27,7 +27,7 @@ fh = logging.FileHandler(logfile)
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler(stream=sys.stdout)
-ch.setLevel(logging.ERROR)
+ch.setLevel(logging.INFO)
 
 log.addHandler(fh)
 log.addHandler(ch)
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     cfg = {}
 
     if os.path.exists(config_file):
-        print("reading conf file")
         log.info("Reading conf file found.. '{}'".format(config_file))
 
         with open(config_file, 'r') as ymlfile:
