@@ -6,3 +6,5 @@ output.dat
 *.log
 # private config file
 config.yml
+*.db
+.DS_Store
