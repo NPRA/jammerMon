@@ -132,15 +132,15 @@ class JammerMon:
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS):
-                #log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
+                # log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC):
-                #log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
+                # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK):
-                #log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
+                # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 continue
 
             if msg.msg_type() != (ublox.CLASS_MON, ublox.MSG_MON_HW):
