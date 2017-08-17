@@ -6,6 +6,8 @@ from collections import deque
 from . import ublox
 from . import util
 
+from . import db, models
+
 log = logging.getLogger("jamMon")
 
 
@@ -40,6 +42,8 @@ class JammerMon:
 
         self._gps_fixes = deque([], 5)
 
+
+
     def next_logical_id(self):
         last_line = util.last_line(self._output)
         if not last_line:
@@ -65,6 +69,14 @@ class JammerMon:
             last_gps_fix = {'lat': -1, 'lon': -1}
         packet.update(last_gps_fix)
 
+        packet["gps_ts"] = packet.get("utc")
+
+        jam_ts = models.JamTimeseries(packet.get("timestamp_id"),
+            packet.get("jamInd"), packet.get("utc"), packet.get("lat"),
+            packet.get("lon"), packet.get("gps_ts"))
+        db.session.add(jam_ts)
+        db.session.commit()
+
         fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
 
         self._file.write(fmt.format(**packet))
@@ -73,6 +85,9 @@ class JammerMon:
     def close(self):
         if self._file:
             self._file.close()
+
+        # Clean up sqlite3 session
+        db.session.remove()
 
     def add_gps(self, lat, lon, height):
         gps = {"lat": lat,
@@ -134,7 +149,7 @@ class JammerMon:
             # log.debug("Name = {}, Fields = {}".format(msg.name(), msg.fields))
 
             packet = msg.fields
-            packet['utc'] = datetime.datetime.utcnow().replace(microsecond=0)
+            packet['utc'] = datetime.datetime.now().replace(microsecond=0)
             packet['timestamp_id'] = self._next_id
             if 'jamInd' not in msg.fields:
                 packet['jamInd'] = -1
@@ -146,4 +161,3 @@ class JammerMon:
             self.write(packet)
 
             self._next_id += 1
-
