@@ -37,7 +37,8 @@ def slack_notification(msg, url=""):
     splitted_args = cmd.format(msg, url)
     args = shlex.split(splitted_args)
     try:
-        subprocess.run(args, check=True)
+        #  subprocess.run(args, check=True)
+        subprocess.check_call(args)
     except subprocess.CalledProcessError as e:
         log.error("Unable to send Slack notification!")
         log.exception(e)
