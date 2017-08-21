@@ -51,6 +51,10 @@ class EVK8N:
     def stream(self):
         return self._device.stream()
 
+    def close(self):
+        if self._device:
+            self._device.close()
+
 
 class FakeEVK8N:
     def __init__(self, device_port, baudrate=115200, timeout=2):
@@ -116,4 +120,7 @@ class FakeEVK8N:
 
     def stream(self):
         return FakeEVK8N.gen_test_messages()
+
+    def close(self):
+        pass
 
