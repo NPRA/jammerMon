@@ -71,7 +71,7 @@ if __name__ == '__main__':
         device = ublox_mon.device.EVK8N(device_path)
 
         log.info("Starting Jammer Monitor!")
-        jam_mon = JammerMon(device, output_file)
+        jam_mon = JammerMon(device, output_file, db_path)
         if not args.quiet:
             slack_notify("jamMon: Starting Jammer monitor")
         jam_mon.run(slack_notify)
