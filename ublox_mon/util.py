@@ -28,7 +28,7 @@ def last_line(filename):
         return None
 
 
-def slack_notification(msg, url):
+def slack_notification(msg, url=""):
     cmd = """curl -X POST --data-urlencode \
         'payload={{"channel": "#tran-notifications", "username": "webhookbot", \
         "text": "{}", \
