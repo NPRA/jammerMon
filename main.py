@@ -10,6 +10,7 @@ import os
 import os.path
 import logging
 import argparse
+from functools import partial
 import serial
 import yaml
 import ublox_mon.util as util
@@ -65,7 +66,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    slack_notify = functools.partial(util.slack_notification, url=slack_url)
+    slack_notify = partial(util.slack_notification, url=slack_url)
     try:
         device = ublox_mon.device.EVK8N(device_path)
 
