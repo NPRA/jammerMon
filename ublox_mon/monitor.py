@@ -17,7 +17,7 @@ class JammerMon:
     store events from the stream in a timeseries output file on disk.
     """
 
-    def __init__(self, device, output):
+    def __init__(self, device, output, db_path):
         self._device = device
         self._today = datetime.datetime.now().date()
         self._output = "_".join([output, str(self._today)])
@@ -33,6 +33,9 @@ class JammerMon:
                 f.write("#id;utc;jamInd;lat;lon\n")
 
         log.info("JammerMon outputting to {}".format(self._output))
+
+        # Setup database
+        self._session = db.get_session(db_path)
 
         # Find / create next ID
         previous_id = self.next_logical_id()
@@ -74,8 +77,8 @@ class JammerMon:
         jam_ts = models.JamTimeseries(packet.get("timestamp_id"),
             packet.get("jamInd"), packet.get("utc"), packet.get("lat"),
             packet.get("lon"), packet.get("gps_ts"))
-        db.session.add(jam_ts)
-        db.session.commit()
+        
+        self._session.add(jam_ts)
 
         fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
 

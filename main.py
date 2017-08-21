@@ -38,7 +38,8 @@ parser.add_argument("-p", "--port", help="serial port")
 parser.add_argument("-b", "--baudrate", type=int, help="serial baud rate", default=115200)
 parser.add_argument("-o", "--output", help="""output file for timeseries data. \
 NOTE: A datetime will be added to each file to track records over multiple days.""", default="data/output")
-parser.add_argument("-s", "--slack_url", help="Slack webhook url for notificatoins")
+parser.add_argument("-s", "--slack_url", help="Slack webhook url for notifications")
+parser.add_argument("-d", "--db_path", help="Path to sqlite3 database file (will be created if missing)")
 
 
 if __name__ == '__main__':
@@ -56,6 +57,7 @@ if __name__ == '__main__':
     device_path = cfg.get("port", args.port)
     output_file = cfg.get("output", args.output)
     slack_url   = cfg.get("slack_webhook_url", args.slack_url)
+    db_path     = cfg.get("db_path", args.db_path)
 
     if not device_path or not os.path.exists(device_path):
         log.error("uBlox device missing! {}".format(device_path))

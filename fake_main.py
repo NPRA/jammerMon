@@ -31,6 +31,7 @@ parser.add_argument("-b", "--baudrate", type=int, help="serial baud rate", defau
 parser.add_argument("-o", "--output", help="""output file for timeseries data. \
 NOTE: A datetime will be added to each file to track records over multiple days.""", default="data/test_output")
 parser.add_argument("-s", "--slack_url", help="Slack webhook url for notificatoins")
+parser.add_argument("-d", "--db_path", help="Path to sqlite3 database file (will be created if missing)")
 
 
 if __name__ == '__main__':
@@ -48,9 +49,10 @@ if __name__ == '__main__':
     device_path = cfg.get("port", args.port)
     output_file = cfg.get("output", args.output)
     _ = cfg.get("slack_webhook_url", args.slack_url)
+    db_path     = cfg.get("db_path", args.db_path)
 
     device = ublox_mon.device.FakeEVK8N(device_path)
-    jam_mon = JammerMon(device, output_file)
+    jam_mon = JammerMon(device, output_file, db_path)
     log.info("Starting Jammer Monitor!")
 
     log.info("Running the fake monitor.")
