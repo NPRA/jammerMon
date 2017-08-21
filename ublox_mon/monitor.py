@@ -2,6 +2,7 @@ import os
 import logging
 import datetime
 from collections import deque
+import signal
 
 from . import ublox
 from . import util
@@ -9,6 +10,24 @@ from . import util
 from . import db, models
 
 log = logging.getLogger("jamMon")
+
+
+class GracefulKiller:
+    kill_now = False
+
+    def __init__(self, notify_callback=None):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+        self._callback = notify_callback
+
+    def exit_gracefully(self, signum, frame):
+        self.kill_now = True
+
+        # Send out notification that we were terminated
+        log.info("jamMon terminated! signum={}".format(signum))
+        if self._callback:
+            self._callback("jamMon: Monitor was terminated.")
 
 
 class JammerMon:
@@ -77,7 +96,7 @@ class JammerMon:
         jam_ts = models.JamTimeseries(packet.get("timestamp_id"),
             packet.get("jamInd"), packet.get("utc"), packet.get("lat"),
             packet.get("lon"), packet.get("gps_ts"))
-        
+
         self._session.add(jam_ts)
 
         fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
@@ -98,7 +117,9 @@ class JammerMon:
                "height": height}
         self._gps_fixes.append(gps)
 
-    def run(self):
+    def run(self, notify_callback=None):
+        self.signal_handler = GracefulKiller(notify_callback)
+
         filter_messages = [
             (ublox.CLASS_MON, ublox.MSG_MON_HW),
             (ublox.CLASS_NAV, ublox.MSG_NAV_POSLLH),
@@ -113,6 +134,9 @@ class JammerMon:
         ]
 
         for msg in self._device.stream():
+
+            if self.signal_handler.kill_now:
+                break
 
             # Filter out messages we don't care about
             if msg.msg_type() not in filter_messages:
@@ -164,3 +188,4 @@ class JammerMon:
             self.write(packet)
 
             self._next_id += 1
+

@@ -32,7 +32,10 @@ parser.add_argument("-o", "--output", help="""output file for timeseries data. \
 NOTE: A datetime will be added to each file to track records over multiple days.""", default="data/test_output")
 parser.add_argument("-s", "--slack_url", help="Slack webhook url for notificatoins")
 parser.add_argument("-d", "--db_path", help="Path to sqlite3 database file (will be created if missing)")
+parser.add_argument("-q", "--quiet", help="To avoid excessive notifications", default=False)
 
+def dummy_notify(msg):
+    log.info("Dummy slack notifier: {}".format(msg))
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -56,4 +59,4 @@ if __name__ == '__main__':
     log.info("Starting Jammer Monitor!")
 
     log.info("Running the fake monitor.")
-    jam_mon.run()
+    jam_mon.run(dummy_notify)

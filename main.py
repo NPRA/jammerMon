@@ -40,6 +40,7 @@ parser.add_argument("-o", "--output", help="""output file for timeseries data. \
 NOTE: A datetime will be added to each file to track records over multiple days.""", default="data/output")
 parser.add_argument("-s", "--slack_url", help="Slack webhook url for notifications")
 parser.add_argument("-d", "--db_path", help="Path to sqlite3 database file (will be created if missing)")
+parser.add_argument("-q", "--quiet", help="To avoid excessive notifications", default=False)
 
 
 if __name__ == '__main__':
@@ -63,21 +64,25 @@ if __name__ == '__main__':
         log.error("uBlox device missing! {}".format(device_path))
         sys.exit(1)
 
+
+    slack_notify = functools.partial(util.slack_notification, url=slack_url)
     try:
         device = ublox_mon.device.EVK8N(device_path)
 
         log.info("Starting Jammer Monitor!")
         jam_mon = JammerMon(device, output_file)
-        jam_mon.run()
+        if not args.quiet:
+            slack_notify("jamMon: Starting Jammer monitor")
+        jam_mon.run(slack_notify)
 
     except serial.seriaulutil.SerialExceptkion as se:
         log.warn("SerialException: Most likely lost connection to serial device.")
         log.exception(se)
-        util.slack_notification("jamMon: SerialException occured. Lost connection to serial device!", slack_url)
+        slack_notify("jamMon: SerialException occured. Lost connection to serial device!")
     except Exception as e:
         log.error("Exception occured in monitor!")
         log.exception(e)
-        util.slack_notification("jamMon: Exception occured: {}".format(str(e)), slack_url)
+        slack_notify("jamMon: Exception occured: {}".format(str(e)))
     finally:
         device.close()
         jam_mon.close()
