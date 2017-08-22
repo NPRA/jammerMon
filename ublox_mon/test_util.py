@@ -3,6 +3,7 @@ from unittest import TestCase
 import os
 from . import util
 
+
 class TestLastLine(TestCase):
     def setUp(self):
         self._filename = "test_last_line.txt"
