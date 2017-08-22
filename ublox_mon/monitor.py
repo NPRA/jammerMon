@@ -36,20 +36,12 @@ class JammerMon:
     store events from the stream in a timeseries output file on disk.
     """
 
-    def __init__(self, device, output, db_path):
+    def __init__(self, device, output_prefix, db_path):
         self._device = device
         self._today = datetime.datetime.now().date()
-        self._output = "_".join([output, str(self._today)])
+        self._output_prefix = output_prefix
 
-        output_dir = os.path.dirname(output)
-        if output_dir and not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-
-        # Creates file if missing + update mtime + write header
-        if not os.path.exists(self._output):
-            with open(self._output, 'a') as f:
-                os.utime(self._output, None)
-                f.write("#id;utc;jamInd;lat;lon\n")
+        self.setup_output_file()
 
         log.info("JammerMon outputting to {}".format(self._output))
 
@@ -60,11 +52,49 @@ class JammerMon:
         previous_id = self.next_logical_id()
         self._next_id = previous_id + 1
 
-        self._file = open(self._output, 'a+')
-
+        # List of the last GPS fixes
         self._gps_fixes = deque([], 5)
 
+    def rotate_output_file(self):
+        """
+        Quick check if we are on a new date or not. If
+        new date then we will close the current 'self._file'
+        and construct a new one.
 
+        This ensures a neat output file rotation.
+        """
+        today = datetime.datetime.now().date()
+
+        # If the date is still the same, don't do anything
+        if today == self._today:
+            return
+
+        # date has changed, create and setup new output file
+        self._file.close()
+        self.setup_output_file()
+
+    def setup_output_file(self):
+        """
+        Setup the correct output file based on the "output" prefix
+        from the configuration file / input arguments. Each output
+        file is separated based on the current date.
+
+        Note that we create the output directory if not existing.
+        """
+        self._today = datetime.datetime.now().date()
+        self._output = "_".join([self._output_prefix, str(self._today)])
+
+        output_dir = os.path.dirname(self._output)
+        if output_dir and not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+
+        # Creates file if missing + update mtime + write header
+        if not os.path.exists(self._output):
+            with open(self._output, 'a') as f:
+                os.utime(self._output, None)
+                f.write("#id;utc;jamInd;lat;lon\n")
+
+        self._file = open(self._output, 'a+')
 
     def next_logical_id(self):
         last_line = util.last_line(self._output)
@@ -84,6 +114,9 @@ class JammerMon:
             return 0
 
     def write(self, packet):
+        # Will only create new output file if the date has changed
+        self.rotate_output_file()
+
         last_gps_fix = None
         if self._gps_fixes:
             last_gps_fix = self._gps_fixes[-1]
@@ -94,15 +127,12 @@ class JammerMon:
         packet["gps_ts"] = packet.get("utc")
 
         jam_ts = models.JamTimeseries(packet.get("timestamp_id"),
-            packet.get("jamInd"), packet.get("utc"), packet.get("lat"),
-            packet.get("lon"), packet.get("gps_ts"))
-
+                                      packet.get("jamInd"), packet.get("utc"), packet.get("lat"),
+                                      packet.get("lon"), packet.get("gps_ts"))
         self._session.add(jam_ts)
 
         fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
-
         self._file.write(fmt.format(**packet))
-        # self._file.flush()
 
     def close(self):
         if self._file:
@@ -123,18 +153,12 @@ class JammerMon:
         filter_messages = [
             (ublox.CLASS_MON, ublox.MSG_MON_HW),
             (ublox.CLASS_NAV, ublox.MSG_NAV_POSLLH),
-            # (ublox.CLASS_NAV, ublox.MSG_NAV_POSECEF),
-            # (ublox.CLASS_RXM, ublox.MSG_RXM_RAW),
-            # (ublox.CLASS_RXM, ublox.MSG_RXM_SFRB),
-            # (ublox.CLASS_AID, ublox.MSG_AID_EPH),
-            # (ublox.CLASS_NAV, ublox.MSG_NAV_SVINFO),
             (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEGPS),
             (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC),
             (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK)
         ]
 
         for msg in self._device.stream():
-
             if self.signal_handler.kill_now:
                 break
 
