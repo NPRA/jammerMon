@@ -31,4 +31,4 @@ class JamTimeseries(Base):
 
     def __str__(self):
         return "{}(id={}, utc={}, indicator={}, latitude={}, longitude={}, gps_ts={})".format(
-            self.__class__, self.utc, self.indicator, self.latitude, self.longitude, self.gps_ts)
+            self.__class__.__name__, self.utc, self.indicator, self.latitude, self.longitude, self.gps_ts)
