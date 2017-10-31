@@ -9,6 +9,7 @@ TODO: Describe the main entrypoint here!
 import os
 import os.path
 import logging
+import coloredlogs
 import argparse
 from functools import partial
 import serial
@@ -23,15 +24,39 @@ from ublox_mon.monitor import JammerMon
 
 logfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "jamMon.log")
 log = logging.getLogger("jamMon")
-log.setLevel(logging.DEBUG)
-fh = logging.FileHandler(logfile)
-fh.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler(stream=sys.stdout)
-ch.setLevel(logging.INFO)
+#log.setLevel(logging.DEBUG)
+#fh = logging.FileHandler(logfile)
+#fh.setLevel(logging.DEBUG)
+#
+#ch = logging.StreamHandler(stream=sys.stdout)
+#ch.setLevel(logging.INFO)
+#
+#log.addHandler(fh)
+#log.addHandler(ch)
 
-log.addHandler(fh)
-log.addHandler(ch)
+
+def init_logging(debug_env_var):
+
+    field_style_override = coloredlogs.DEFAULT_FIELD_STYLES
+    level_style_override = coloredlogs.DEFAULT_LEVEL_STYLES
+
+    logging_level = 'INFO'
+    log.setLevel(logging.INFO)
+
+    if os.environ.get(debug_env_var):
+        logging_level = 'DEBUG'
+        log.setLevel(logging.DEBUG)
+
+    field_style_override['levelname'] = {"color": "magenta", "bold": True}
+    level_style_override['debug'] = {"color": "blue"}
+
+    coloredlogs.install(level=logging_level,
+                        fmt="%(asctime)s %(name)s %(levelname)s %(message)s",
+                        level_styles=level_style_override,
+                        field_styles=field_style_override)
+
+init_logging('DEBUG')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", default="config.yml", help="Configuration file")
