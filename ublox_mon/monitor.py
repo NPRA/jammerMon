@@ -54,6 +54,7 @@ class JammerMon:
 
         # List of the last GPS fixes
         self._gps_fixes = deque([], 5)
+        self._gps_utc = None
 
     def rotate_output_file(self):
         """
@@ -92,7 +93,7 @@ class JammerMon:
         if not os.path.exists(self._output):
             with open(self._output, 'a') as f:
                 os.utime(self._output, None)
-                f.write("#id;utc;jamInd;lat;lon\n")
+                f.write("#id;utc;jamInd;lat;lon;gps_utc\n")
 
         self._file = open(self._output, 'a+')
 
@@ -131,7 +132,7 @@ class JammerMon:
                                       packet.get("lon"), packet.get("gps_ts"))
         self._session.add(jam_ts)
 
-        fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon}\n"
+        fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon};{gps_utc}\n"
         self._file.write(fmt.format(**packet))
 
     def close(self):
@@ -186,18 +187,16 @@ class JammerMon:
                 # log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
                 continue
 
-            gps_utc = None
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC):
                 # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
                 # continue
-                # gps_utc = msg.fields.get("")
                 year = msg.fields.get("year")
                 month = msg.fields.get("month")
                 day = msg.fields.get("day")
                 hour = msg.fields.get("hour")
                 minutes = msg.fields.get("min")
                 seconds = msg.fields.get("sec")
-                gps_utc = datetime.datetime(year, month, day, hour, minutes, seconds)
+                self._gps_utc = datetime.datetime(year, month, day, hour, minutes, seconds)
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK):
                 # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
@@ -210,6 +209,7 @@ class JammerMon:
 
             packet = msg.fields
             packet['utc'] = datetime.datetime.now().replace(microsecond=0)
+            packet['gps_utc'] = self._gps_utc
             packet['timestamp_id'] = self._next_id
             if 'jamInd' not in msg.fields:
                 packet['jamInd'] = -1
@@ -221,4 +221,3 @@ class JammerMon:
             self.write(packet)
 
             self._next_id += 1
-
