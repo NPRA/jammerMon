@@ -186,9 +186,18 @@ class JammerMon:
                 # log.debug("MSG-NAV-TIMEGPS: {}".format(msg.fields))
                 continue
 
+            gps_utc = None
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_TIMEUTC):
                 # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
-                continue
+                # continue
+                # gps_utc = msg.fields.get("")
+                year = msg.fields.get("year")
+                month = msg.fields.get("month")
+                day = msg.fields.get("day")
+                hour = msg.fields.get("hour")
+                minutes = msg.fields.get("min")
+                seconds = msg.fields.get("sec")
+                gps_utc = datetime.datetime(year, month, day, hour, minutes, seconds)
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK):
                 # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
