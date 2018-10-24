@@ -163,9 +163,6 @@ class FakeEVK8N:
             'pullL': 0
         }
 
-        # for m in itertools.cycle(messages):
-        #     time.sleep(1)
-        #     yield m
         while True:
             m1.fields.update({'jamInd': random.randint(1, 240)})
             time.sleep(1)
