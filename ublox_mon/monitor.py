@@ -205,8 +205,6 @@ class JammerMon:
             if msg.msg_type() != (ublox.CLASS_MON, ublox.MSG_MON_HW):
                 continue
 
-            # log.debug("Name = {}, Fields = {}".format(msg.name(), msg.fields))
-
             packet = msg.fields
             packet['utc'] = datetime.datetime.now().replace(microsecond=0)
             packet['gps_utc'] = self._gps_utc
