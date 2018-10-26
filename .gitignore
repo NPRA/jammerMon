@@ -8,3 +8,4 @@ output.dat
 config.yml
 *.db
 .DS_Store
+.vscode
