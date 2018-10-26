@@ -213,6 +213,10 @@ class JammerMon:
                 packet['jamInd'] = -1
             packet['lat'] = 0
             packet['lon'] = 0
+
+            # TODO: Hent ut 'agcCnt' og logg.
+            # >> AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)
+
             log.debug("{}: {}".format(self._next_id, packet))
 
             # Write data to timeseries output file
