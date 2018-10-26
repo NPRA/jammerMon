@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 """
-TODO: Describe the main entrypoint here!
+A standalone Jammer Monitor that initializes the pyUblox + EVK8 device
+to listen for GPS signals. The EVK8 device will in addition also report
+a 'jamming index' (0-255) which indicate the noise level detected.
+
+There are many reason why one might experience noise - one very interesting
+reason is "gps jamming" or malfunctioning GPS devices.
 
 @author asbjorn
 """
