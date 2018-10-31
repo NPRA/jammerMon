@@ -93,7 +93,7 @@ class JammerMon:
         if not os.path.exists(self._output):
             with open(self._output, 'a') as f:
                 os.utime(self._output, None)
-                f.write("#id;utc;jamInd;lat;lon;gps_utc\n")
+                f.write("#id;utc;jamInd;agcCnt;lat;lon;gps_utc\n")
 
         self._file = open(self._output, 'a+')
 
@@ -132,7 +132,7 @@ class JammerMon:
                                       packet.get("lon"), packet.get("gps_ts"))
         self._session.add(jam_ts)
 
-        fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon};{gps_utc}\n"
+        fmt = "{timestamp_id};{utc};{jamInd};{agcCnt};{lat};{lon};{gps_utc}\n"
         self._file.write(fmt.format(**packet))
 
     def close(self):
@@ -213,9 +213,6 @@ class JammerMon:
                 packet['jamInd'] = -1
             packet['lat'] = 0
             packet['lon'] = 0
-
-            # TODO: Hent ut 'agcCnt' og logg.
-            # >> AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)
 
             log.debug("{}: {}".format(self._next_id, packet))
 
