@@ -1,5 +1,6 @@
 *.pyc
 venv
+venv3
 # test files
 test_output.dat
 output.dat
@@ -9,3 +10,4 @@ config.yml
 *.db
 .DS_Store
 .vscode
+# ignore locale data folder
