@@ -54,7 +54,7 @@ class JammerMon:
 
         # List of the last GPS fixes
         self._gps_fixes = deque([], 5)
-        self._gps_utc = None
+        self._gps_utc = deque([], 5)
 
     def rotate_output_file(self):
         """
@@ -93,7 +93,7 @@ class JammerMon:
         if not os.path.exists(self._output):
             with open(self._output, 'a') as f:
                 os.utime(self._output, None)
-                f.write("#id;utc;jamInd;lat;lon;gps_utc\n")
+                f.write("#id;utc;jamInd;agcCnt;lat;lon;gps_utc\n")
 
         self._file = open(self._output, 'a+')
 
@@ -123,8 +123,8 @@ class JammerMon:
             last_gps_fix = self._gps_fixes[-1]
         else:
             last_gps_fix = {'lat': -1, 'lon': -1}
-        packet.update(last_gps_fix)
 
+        packet.update(last_gps_fix)
         packet["gps_ts"] = packet.get("utc")
 
         jam_ts = models.JamTimeseries(packet.get("timestamp_id"),
@@ -132,7 +132,7 @@ class JammerMon:
                                       packet.get("lon"), packet.get("gps_ts"))
         self._session.add(jam_ts)
 
-        fmt = "{timestamp_id};{utc};{jamInd};{lat};{lon};{gps_utc}\n"
+        fmt = "{timestamp_id};{utc};{jamInd};{agcCnt};{lat};{lon};{gps_utc}\n"
         self._file.write(fmt.format(**packet))
 
     def close(self):
@@ -196,7 +196,7 @@ class JammerMon:
                 hour = msg.fields.get("hour")
                 minutes = msg.fields.get("min")
                 seconds = msg.fields.get("sec")
-                self._gps_utc = datetime.datetime(year, month, day, hour, minutes, seconds)
+                self._gps_utc.append(datetime.datetime(year, month, day, hour, minutes, seconds))
 
             if msg.msg_type() == (ublox.CLASS_NAV, ublox.MSG_NAV_CLOCK):
                 # log.debug("MSG-NAV-TIMEUTC: {}".format(msg.fields))
@@ -207,15 +207,12 @@ class JammerMon:
 
             packet = msg.fields
             packet['utc'] = datetime.datetime.now().replace(microsecond=0)
-            packet['gps_utc'] = self._gps_utc
+            packet['gps_utc'] = self._gps_utc[-1]
             packet['timestamp_id'] = self._next_id
             if 'jamInd' not in msg.fields:
                 packet['jamInd'] = -1
             packet['lat'] = 0
             packet['lon'] = 0
-
-            # TODO: Hent ut 'agcCnt' og logg.
-            # >> AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)
 
             log.debug("{}: {}".format(self._next_id, packet))
 
